@@ -1,0 +1,43 @@
+services:
+  sambadc:
+    build: .
+    restart: always
+    network_mode: host
+    cap_add:
+      - CAP_SYS_ADMIN
+    hostname: ${SAMBADC_HOSTNAME:-dc.sad.lan}
+    environment:
+      DOMAIN_ACTION: provision
+      INTERFACES: ${SAMBADC_INTERFACES:-lo wlan0}
+      REALM: ${SAMBA_REALM:-sad.lan}
+      TZ: ${TZ:-UTC}
+      WORKGROUP: ${SAMBA_WORKGROUP:-SAD}
+      LOG_LEVEL: 5
+    volumes:
+      - ./vols/etc:/etc/samba      
+      - ./vols/lib:/var/lib/samba
+    ports:
+      - 53:53
+      - 53:53/udp
+      - 88:88
+      - 88:88/udp
+      - 135:135
+      - 137-138:137-138/udp
+      - 139:139
+      - 389:389
+      - 389:389/udp
+      - 445:445
+      - 464:464
+      - 464:464/udp
+      - 636:636
+      - 3268-3269:3268-3269
+      - 49152-65535
+    secrets:
+      - samba-admin-password
+
+volumes:
+  etc:
+  lib:
+secrets:
+  samba-admin-password:
+    file: ./adm-passwd.txt
