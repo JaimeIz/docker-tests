@@ -1,0 +1,13 @@
+services:
+  phpLDAPadmin:
+    image: leenooks/phpldapadmin:2.0.0-dev
+    environment:
+      - APP_KEY='base64:qrBBHjPRWWDzhFzrKOlTnVVe71j6GzWyQwsMOXbEGo4='
+      - APP_URL='http://127.0.0.1:8080'
+      - APP_TIMEZONE=UTC
+      - LDAP_HOST=cd1.sad.lan
+      - LDAP_CACHE=true
+      - CACHE_DRIVER=memcached
+      - MEMCACHED_START=TRUE
+    ports:
+      - 8080:80

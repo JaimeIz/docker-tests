@@ -1,0 +1,32 @@
+services:
+  samba:
+    build: .
+    container_name: DebSambaDC
+    hostname: ${SAMBADC_HOSTNAME:-dc1.sad.lan}
+    environment:
+      - DOMAIN=SAD
+      - REALM=SAD.LAN
+      - SAMBA_PASSWORD=Admin123
+      - KERBEROS_PASSWORD=Kerberos1
+      - KRB5_CONFIG=/etc/krb5kdc/krb5.conf
+    volumes:
+      - ./vols/conf/bind:/etc/bind
+      - ./vols/conf/samba:/etc/samba
+      - ./vols/conf/krb5:/etc/krb5kdc
+      - ./vols/data/samba:/var/lib/samba
+      - ./vols/data/krb5:/var/lib/krb5kdc
+    ports:
+      - 53:53
+      - 53:53/udp
+      - 88:88
+      - 88:88/udp
+      - 135:135
+      - 137-138:137-138/udp
+      - 139:139
+      - 389:389
+      - 389:389/udp
+      - 445:445
+      - 464:464
+      - 464:464/udp
+      - 636:636
+      - 3268-3269:3268-3269

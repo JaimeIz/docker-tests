@@ -26,7 +26,7 @@ if [ ! -f /var/lib/samba/registry.tdb ]; then
   fi
   
   if [ $DOMAIN_ACTION == provision ]; then
-    PROVISION_OPTS="--server-role=dc --dns-backend=SAMBA_INTERNAL \
+    PROVISION_OPTS="--server-role=dc \
       --use-rfc2307 --domain=$WORKGROUP --realm=$REALM --adminpass='$ADMIN_PASSWORD'"
   elif [ $DOMAIN_ACTION == join ]; then
     PROVISION_OPTS="$REALM DC -UAdministrator --password='$ADMIN_PASSWORD'"
