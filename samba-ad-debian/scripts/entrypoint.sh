@@ -23,18 +23,18 @@ if [[ $HOST_IP ]]; then
 fi
 
 appSetup () {
-    echo "Initializing samba database..."
+	echo "Initializing samba database..."
 
-    SAMBA_PASSWORD=${SAMBA_PASSWORD:-$(pwgen -cny 10 1)}
-    export KERBEROS_PASSWORD=${KERBEROS_PASSWORD:-$(pwgen -cny 10 1)}
-    echo Samba administrator password: $SAMBA_PASSWORD
+	SAMBA_PASSWORD=${SAMBA_PASSWORD:-$(pwgen -cny 10 1)}
+	export KERBEROS_PASSWORD=${KERBEROS_PASSWORD:-$(pwgen -cny 10 1)}
+	echo Samba administrator password: $SAMBA_PASSWORD
 	echo Kerberos KDC database master key: $KERBEROS_PASSWORD
 
-    # Provision Samba
-    rm -f /etc/samba/smb.conf
-    rm -rf /var/lib/samba/*
-    mkdir -p /var/lib/samba/private
-    samba-tool domain provision \
+	# Provision Samba
+	rm -f /etc/samba/smb.conf
+	rm -rf /var/lib/samba/*
+	mkdir -p /var/lib/samba/private
+	samba-tool domain provision \
 		--use-rfc2307 \
 		--domain=$DOMAIN \
 		--realm=$REALM \
@@ -43,9 +43,7 @@ appSetup () {
 		--adminpass=$SAMBA_PASSWORD
 		$HOST_IP
 
-	rm -f /etc/samba/smb.conf /etc/krb5.conf
-
-  	echo "!root = SAMDOM\Administrator" > /etc/samba/user.map
+  	echo "!root = $NETBIOS_NAME\Administrator" > /etc/samba/user.map
 
 	mkdir -p -m 700 /etc/samba/conf.d
 
@@ -80,7 +78,8 @@ appStart () {
     if [ ! -f "${SETUP_LOCK_FILE}" ]; then
       appSetup
     fi
-    /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+    samba -i
+#    /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
 }
 
 appHelp () {

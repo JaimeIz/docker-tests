@@ -43,14 +43,23 @@ if [ ! -f /var/lib/samba/registry.tdb ]; then
 
   mv /etc/samba/smb.conf /etc/samba/smb.conf.bak
   echo 'root = administrator' > /etc/samba/smbusers
+
 fi
 
 mkdir -p -m 700 /etc/samba/conf.d
+
+$CERTS_DIR='/etc/samba/tls'
+mkdir -p -m 700 $CERTS_DIR
+
+openssl req -nodes -x509 -newkey rsa:2048 -keyout $CERTS_DIR/ca.key -out $CERTS_DIR/ca.crt
+openssl req -nodes -newkey rsa:2048 -keyout $CERTS_DIR/server.key -out $CERTS_DIR/server.scr
+openssl x509 -req -in $CERTS_DIR/server.scr -days 365 -CA $CERTS_DIR/ca.crt -CAkey $CERTS_DIR/ca.key -CAcreateserial -out $CERTS_DIR/server.crt
 
 source /root/.templates
 echo "$SMBCONF" > /etc/samba/smb.conf
 echo "$NETLOGON" > /etc/samba/conf.d/netlogon.conf
 echo "$SYSVOL" > /etc/samba/conf.d/sysvol.conf
+echo "$KRB5CONF" > /etc/krb5.conf
 
 for file in $(ls -A /etc/samba/conf.d/*.conf); do
   echo "include = $file" >> /etc/samba/smb.conf
