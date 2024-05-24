@@ -27,7 +27,7 @@ RUN apk add --update --no-cache \
         samba-dc=$SAMBA_VERSION samba-winbind-clients=$SAMBA_VERSION \
         bind bind-libs bind-tools \ 
         libcrypto3 libxml2 tzdata \
-        py3-setuptools \ 
+        py3-setuptools openssl \ 
     && chmod 0755 /usr/local/bin/entrypoint.sh
 
 VOLUME /etc/samba /var/lib/samba

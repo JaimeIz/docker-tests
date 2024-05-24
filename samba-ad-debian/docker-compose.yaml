@@ -5,7 +5,7 @@ services:
     hostname: ${SAMBADC_HOSTNAME:-dc1.sad.lan}
     environment:
       - DOMAIN=SAD
-      - REALM=SAD.LAN
+      - WORKGROUP=${SAMBA_WORKGROUP:-SAD}
       - SAMBA_PASSWORD=Admin123
       - KERBEROS_PASSWORD=Kerberos1
       - KRB5_CONFIG=/etc/krb5kdc/krb5.conf

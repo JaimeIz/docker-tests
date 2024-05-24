@@ -25,7 +25,12 @@ SMBCONF="
 	log level = $LOG_LEVEL
 	winbind refresh tickets = Yes
 	winbind use default domain = $WINBIND_USE_DEFAULT_DOMAIN
-    ${DNS_FORWARDER:+'dns forwarder = '$DNS_FORWARDER}
+	${DNS_FORWARDER:+dns forwarder = $DNS_FORWARDER}
+
+	tls enabled  = yes
+	tls keyfile  = tls/server.key
+	tls certfile = tls/server.crt
+	tls cafile   = tls/ca.crt
 "
 
 SYSVOL="
@@ -42,12 +47,14 @@ KRB5CONF="
 
 [realms]
 	$REALM = {
-		kdc = DC1.$REALM:88
-		admin_server = DC1.$REALM:749
-		kpasswd_server = DC1.$REALM
+		kdc = $NETBIOS_NAME.$REALM:88
+		admin_server = $NETBIOS_NAME.$REALM:749
+		kpasswd_server = $NETBIOS_NAME.$REALM
 		default_domain = $REALM
 	}
 
 [domain_realm]
-	dc1 = $REALM
+	.$REALM = $NETBIOS_NAME.$REALM
+	$REALM = $NETBIOS_NAME.$REALM
+	$WORKGROUP = $REALM
 "

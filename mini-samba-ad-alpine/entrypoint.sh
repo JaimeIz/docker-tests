@@ -6,6 +6,7 @@ else
   NETBIOS_NAME=$(echo $NETBIOS_NAME | tr [a-z] [A-Z])
 fi
 REALM=$(echo "$REALM" | tr [a-z] [A-Z])
+WORKGROUP=$(echo "$WORKGROUP" | tr [a-z] [A-Z])
 
 if [ ! -f /etc/timezone ] && [ ! -z "$TZ" ]; then
   echo 'Set timezone'
@@ -29,12 +30,7 @@ if [ ! -f /var/lib/samba/registry.tdb ]; then
     PROVISION_OPTS="--server-role=dc \
       --use-rfc2307 --domain=$WORKGROUP --realm=$REALM --adminpass='$ADMIN_PASSWORD'"
   elif [ $DOMAIN_ACTION == join ]; then
-    PROVISION_OPTS="$REALM DC -UAdministrator --password='$ADMIN_PASSWORD'"
-  else
-    echo 'Only provision and join actions are supported.'
-    exit 1
-  fi
-
+    PROVISION_OPTS="$REALlib
   rm -f /etc/samba/smb.conf /etc/krb5.conf
 
   # This step is required for INTERFACE_OPTS to work as expected
@@ -48,12 +44,12 @@ fi
 
 mkdir -p -m 700 /etc/samba/conf.d
 
-$CERTS_DIR='/etc/samba/tls'
+CERTS_DIR="/var/lib/samba/private/tls"
 mkdir -p -m 700 $CERTS_DIR
 
-openssl req -nodes -x509 -newkey rsa:2048 -keyout $CERTS_DIR/ca.key -out $CERTS_DIR/ca.crt
-openssl req -nodes -newkey rsa:2048 -keyout $CERTS_DIR/server.key -out $CERTS_DIR/server.scr
-openssl x509 -req -in $CERTS_DIR/server.scr -days 365 -CA $CERTS_DIR/ca.crt -CAkey $CERTS_DIR/ca.key -CAcreateserial -out $CERTS_DIR/server.crt
+#openssl req -nodes -x509 -newkey rsa:2048 -keyout $CERTS_DIR/ca.key -out $CERTS_DIR/ca.crt -subj "/C=ES/ST=HUESCA/L=HUESCA/O=Dis/CN=$REALM"
+#openssl req -nodes -newkey rsa:2048 -keyout $CERTS_DIR/server.key -out $CERTS_DIR/server.scr  -subj "/C=ES/ST=HUESCA/L=HUESCA/O=Dis/CN=$HOST.$REALM"
+#openssl x509 -req -in $CERTS_DIR/server.scr -days 365 -CA $CERTS_DIR/ca.crt -CAkey $CERTS_DIR/ca.key -CAcreateserial -out $CERTS_DIR/server.crt
 
 source /root/.templates
 echo "$SMBCONF" > /etc/samba/smb.conf

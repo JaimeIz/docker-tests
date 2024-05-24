@@ -18,6 +18,8 @@ fi
 
 REALM=$(echo "$REALM" | tr [a-z] [A-Z])
 
+WORKGROUP=$(echo "$WORKGROUP" | tr [a-z] [A-Z])
+
 if [[ $HOST_IP ]]; then
     HOST_IP="--host-ip=${HOST_IP}"
 fi
@@ -63,13 +65,26 @@ appSetup () {
     expect /root/kdb5_util_create.expect
 
     # Export kerberos keytab for use with sssd
-	samba-tool domain exportkeytab /etc/krb5.keytab --principal ${HOSTNAME}\$
+	samba-tool domain exportkeytab /etc/krb5.keytab --principal ${NETBIOS_NAME}\$
     
 	# Configure BIND9
 	cp /root/bind/named.conf /etc/bind/named.conf
 	cp /root/bind/named.conf.options /etc/bind/named.conf.options
 	chgrp -R bind /var/lib/samba/bind-dns
 	chown -R bind:bind /etc/bind
+
+	CERTS_DIR="/usr/local/samba/private/tls"
+	mkdir -p -m 700 $CERTS_DIR
+
+	openssl req -nodes -x509 -newkey rsa:2048 -keyout $CERTS_DIR/ca.key -out $CERTS_DIR/ca.crt -subj "/C=ES/ST=HUESCA/L=HUESCA/O=Dis/CN=$REALM"
+	openssl req -nodes -newkey rsa:2048 -keyout $CERTS_DIR/server.key -out $CERTS_DIR/server.scr  -subj "/C=ES/ST=HUESCA/L=HUESCA/O=Dis/CN=$HOST.$REALM"
+	openssl x509 -req -in $CERTS_DIR/server.scr -days 365 -CA $CERTS_DIR/ca.crt -CAkey $CERTS_DIR/ca.key -CAcreateserial -out $CERTS_DIR/server.crt
+
+	source /root/.templates
+	echo "$SMBCONF" > /etc/samba/smb.conf
+	echo "$NETLOGON" > /etc/samba/conf.d/netlogon.conf
+	echo "$SYSVOL" > /etc/samba/conf.d/sysvol.conf
+	echo "$KRB5CONF" > /etc/krb5.conf
 
     touch "${SETUP_LOCK_FILE}"
 }
