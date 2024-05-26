@@ -57,7 +57,6 @@ mkdir -p -m 700 $CERTS_DIR
 #openssl x509 -req -in $CERTS_DIR/server.scr -days 365 -CA $CERTS_DIR/ca.crt -CAkey $CERTS_DIR/ca.key -CAcreateserial -out $CERTS_DIR/server.crt
 
 source /root/.templates
-      DNS_FORWARDER: 8.8.8.8
 echo "$SMBCONF" > /etc/samba/smb.conf
 echo "$NETLOGON" > /etc/samba/conf.d/netlogon.conf
 echo "$SYSVOL" > /etc/samba/conf.d/sysvol.conf
