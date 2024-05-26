@@ -52,7 +52,26 @@ services:
       - CACHE_DRIVER=memcached
       - MEMCACHED_START=TRUE
     ports:
-      - 8080:80
+      - 8000:80
+    networks:
+      - samba-network
+
+  adwebmanager:
+    build:
+      context: ./AD-webmanager
+      dockerfile: Dockerfile
+    environment:
+      - SECRET_KEY=RANDOM_STRING
+      - LDAP_DOMAIN=SAD.LAN
+      - SEARCH_DN=DC=sad,DC=lan
+      - DEBUG=True
+      - USE_LOGGING=True
+      - ADMIN_GROUP=Domain Admins
+      - LDAP_SERVER=dc1.sad.lan
+      - SICCIP_AWARE=False
+      - TIMEZONE=Europe/Madrid
+    ports:
+      - 8080:8080
     networks:
       - samba-network
 
