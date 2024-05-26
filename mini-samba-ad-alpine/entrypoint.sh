@@ -8,9 +8,10 @@ fi
 
 REALM=$(echo "$REALM" | tr [a-z] [A-Z])
 WORKGROUP=$(echo "$WORKGROUP" | tr [a-z] [A-Z])
+ALLOW_LDAP_INSECURE=$(echo "$ALLOW_LDAP_INSECURE" | tr [a-z] [A-Z])
 
-if [ "$LDAP_ALLOW_INSECURE" != "true" ]; then
-  LDAP_ALLOW_INSECURE=''
+if [ "$ALLOW_LDAP_INSECURE" != "true" ]; then
+  ALLOW_LDAP_INSECURE=''
 fi
 
 if [ ! -f /etc/timezone ] && [ ! -z "$TZ" ]; then

@@ -2,6 +2,7 @@ FROM alpine:3.19
 
 ENV ADMIN_PASSWORD_SECRET=samba-admin-password \
     ALLOW_DNS_UPDATES=secure \
+    ALLOW_LDAP_INSECURE=false \
     BIND_INTERFACES_ONLY=yes \
     DOMAIN_ACTION=provision \
     DOMAIN_LOGONS=yes \

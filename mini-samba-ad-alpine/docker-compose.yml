@@ -12,7 +12,7 @@ services:
       REALM: ${SAMBA_REALM:-sad.lan}
       TZ: ${TZ:-UTC}
       WORKGROUP: ${SAMBA_WORKGROUP:-SAD}
-      LDAP_ALLOW_INSECURE: true
+      ALLOW_LDAP_INSECURE: false
       DNS_FORWARDER: 8.8.8.8
       LOG_LEVEL: 5
     volumes:
