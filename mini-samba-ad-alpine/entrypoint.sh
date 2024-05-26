@@ -30,7 +30,12 @@ if [ ! -f /var/lib/samba/registry.tdb ]; then
     PROVISION_OPTS="--server-role=dc \
       --use-rfc2307 --domain=$WORKGROUP --realm=$REALM --adminpass='$ADMIN_PASSWORD'"
   elif [ $DOMAIN_ACTION == join ]; then
-    PROVISION_OPTS="$REALlib
+    PROVISION_OPTS="$REALM DC -UAdministrator --password='$ADMIN_PASSWORD'"
+  else
+    echo 'Only provision and join actions are supported.'
+    exit 1
+  fi
+  
   rm -f /etc/samba/smb.conf /etc/krb5.conf
 
   # This step is required for INTERFACE_OPTS to work as expected
@@ -52,6 +57,7 @@ mkdir -p -m 700 $CERTS_DIR
 #openssl x509 -req -in $CERTS_DIR/server.scr -days 365 -CA $CERTS_DIR/ca.crt -CAkey $CERTS_DIR/ca.key -CAcreateserial -out $CERTS_DIR/server.crt
 
 source /root/.templates
+      DNS_FORWARDER: 8.8.8.8
 echo "$SMBCONF" > /etc/samba/smb.conf
 echo "$NETLOGON" > /etc/samba/conf.d/netlogon.conf
 echo "$SYSVOL" > /etc/samba/conf.d/sysvol.conf
