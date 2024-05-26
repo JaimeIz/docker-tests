@@ -1,0 +1,3 @@
+[submodule "mini-samba-ad-alpine/AD-webmanager"]
+	path = mini-samba-ad-alpine/AD-webmanager
+	url = https://github.com/VicentGJ/AD-webmanager
