@@ -17,8 +17,12 @@ if [ ! -f /etc/timezone ] && [ ! -z "$TZ" ]; then
 fi
 
 REALM=$(echo "$REALM" | tr [a-z] [A-Z])
-
 WORKGROUP=$(echo "$WORKGROUP" | tr [a-z] [A-Z])
+ALLOW_LDAP_INSECURE=$(echo "$ALLOW_LDAP_INSECURE" | tr [a-z] [A-Z])
+
+if [ "$ALLOW_LDAP_INSECURE" != "true" ]; then
+  ALLOW_LDAP_INSECURE=''
+fi
 
 if [[ $HOST_IP ]]; then
     HOST_IP="--host-ip=${HOST_IP}"
@@ -33,7 +37,7 @@ appSetup () {
 	echo Kerberos KDC database master key: $KERBEROS_PASSWORD
 
 	# Provision Samba
-	rm -f /etc/samba/smb.conf
+	rm -f /etc/samba/smb.conf /etc/krb5.conf
 	rm -rf /var/lib/samba/*
 	mkdir -p /var/lib/samba/private
 	samba-tool domain provision \
@@ -49,19 +53,20 @@ appSetup () {
 
 	mkdir -p -m 700 /etc/samba/conf.d
 
+	# Load templates
 	source /root/.templates
 	echo "$SMBCONF" > /etc/samba/smb.conf
 	echo "$NETLOGON" > /etc/samba/conf.d/netlogon.conf
 	echo "$SYSVOL" > /etc/samba/conf.d/sysvol.conf
-
+	
 	for file in $(ls -A /etc/samba/conf.d/*.conf); do
 		echo "include = $file" >> /etc/samba/smb.conf
 	done
-    
+
 	# Config kerberos
-	cp /var/lib/samba/private/krb5.conf $KRB5_CONFIG
-    
-	# Create Kerberos database
+	echo "$KRB5CONF" > ${KRB5_DIR:-/etc}/krb5.conf
+
+    # Create Kerberos database
     expect /root/kdb5_util_create.expect
 
     # Export kerberos keytab for use with sssd
@@ -73,6 +78,7 @@ appSetup () {
 	chgrp -R bind /var/lib/samba/bind-dns
 	chown -R bind:bind /etc/bind
 
+	# Creating certs
 	CERTS_DIR="/usr/local/samba/private/tls"
 	mkdir -p -m 700 $CERTS_DIR
 
@@ -80,12 +86,7 @@ appSetup () {
 	openssl req -nodes -newkey rsa:2048 -keyout $CERTS_DIR/server.key -out $CERTS_DIR/server.scr  -subj "/C=ES/ST=HUESCA/L=HUESCA/O=Dis/CN=$HOST.$REALM"
 	openssl x509 -req -in $CERTS_DIR/server.scr -days 365 -CA $CERTS_DIR/ca.crt -CAkey $CERTS_DIR/ca.key -CAcreateserial -out $CERTS_DIR/server.crt
 
-	source /root/.templates
-	echo "$SMBCONF" > /etc/samba/smb.conf
-	echo "$NETLOGON" > /etc/samba/conf.d/netlogon.conf
-	echo "$SYSVOL" > /etc/samba/conf.d/sysvol.conf
-	echo "$KRB5CONF" > /etc/krb5.conf
-
+	# Lock configuration
     touch "${SETUP_LOCK_FILE}"
 }
 

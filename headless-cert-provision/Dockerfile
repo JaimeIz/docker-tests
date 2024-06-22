@@ -2,9 +2,8 @@ FROM neilpang/acme.sh
 
 ENV DuckDNS_Token=${DuckDNS_Token}
 
-RUN acme.sh --register-account -m admin@wikicau.duckdns.org
+COPY setup.sh /
 
-# RUN acme.sh --issue --dns dns_duckdns -d *.wikicau.duckdns.org
+RUN chmod +x /setup.sh /acme.sh
 
-ENTRYPOINT ["/entry.sh"]
-CMD ["daemon"]
+ENTRYPOINT ["/setup.sh"]

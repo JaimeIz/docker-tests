@@ -1,9 +1,9 @@
 FROM debian:12-slim
 
 ENV ADMIN_PASSWORD_SECRET=samba-admin-password \
-    ALLOW_DNS_UPDATES=secure \
-    ALLOW_LDAP_INSECURE=false \
     BIND_INTERFACES_ONLY=yes \
+    ALLOW_LDAP_INSECURE=false \
+    ALLOW_DNS_UPDATES=secure \
     DOMAIN_ACTION=provision \
     DOMAIN_LOGONS=yes \
     DOMAIN_MASTER=no \

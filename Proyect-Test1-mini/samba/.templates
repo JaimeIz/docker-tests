@@ -26,7 +26,6 @@ SMBCONF="
 	winbind refresh tickets = Yes
 	winbind use default domain = $WINBIND_USE_DEFAULT_DOMAIN
 	${DNS_FORWARDER:+dns forwarder = $DNS_FORWARDER}
-	${ALLOW_LDAP_INSECURE:+ldap server require strong auth = no}
 
 	tls enabled  = yes
 	tls keyfile  = tls/server.key

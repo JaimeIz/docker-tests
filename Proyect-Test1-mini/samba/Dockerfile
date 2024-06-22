@@ -2,7 +2,6 @@ FROM alpine:3.19
 
 ENV ADMIN_PASSWORD_SECRET=samba-admin-password \
     ALLOW_DNS_UPDATES=secure \
-    ALLOW_LDAP_INSECURE=false \
     BIND_INTERFACES_ONLY=yes \
     DOMAIN_ACTION=provision \
     DOMAIN_LOGONS=yes \
@@ -17,13 +16,15 @@ ENV ADMIN_PASSWORD_SECRET=samba-admin-password \
     WINBIND_USE_DEFAULT_DOMAIN=yes \
     WORKGROUP=AD
 
+ARG SAMBA_VERSION=4.18.9-r0
+
 COPY .templates /root/
 COPY entrypoint.sh /usr/local/bin/
 
 RUN apk add --update --no-cache \
         krb5 \
         tdb ldb-tools \
-        samba-dc samba-winbind-clients \
+        samba-dc=$SAMBA_VERSION samba-winbind-clients=$SAMBA_VERSION \
         bind bind-libs bind-tools \ 
         libcrypto3 libxml2 tzdata \
         py3-setuptools openssl \ 

@@ -1,2 +1,7 @@
 vols
 data
+
+
+## 🤫 These files must remain secret 🤫
+.env
+/adm-passwd.txt

@@ -2,17 +2,18 @@ services:
   sambadc:
     build: .
     restart: always
-    #network_mode: host
+    network_mode: host
     cap_add:
+      - NET_ADMIN
       - CAP_SYS_ADMIN
     hostname: ${SAMBADC_HOSTNAME:-dc1.sad.lan}
     environment:
       DOMAIN_ACTION: provision
-      INTERFACES: ${SAMBADC_INTERFACES:-lo eth0}
+      INTERFACES: ${SAMBADC_INTERFACES:-lo docker0 wlan0}
       REALM: ${SAMBA_REALM:-sad.lan}
       TZ: ${TZ:-UTC}
       WORKGROUP: ${SAMBA_WORKGROUP:-SAD}
-      ALLOW_LDAP_INSECURE: false
+      ALLOW_LDAP_INSECURE: true
       DNS_FORWARDER: 8.8.8.8
       LOG_LEVEL: 5
     volumes:
@@ -33,8 +34,6 @@ services:
       - 464:464/udp
       - 636:636
       - 3268-3269:3268-3269
-    networks:
-      - samba-network
     secrets:
       - samba-admin-password
 
@@ -74,7 +73,7 @@ services:
       - 8080:8080
     networks:
       - samba-network
-
+  
 secrets:
   samba-admin-password:
     file: ../adm-passwd.txt
